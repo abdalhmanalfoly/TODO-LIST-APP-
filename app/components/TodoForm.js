@@ -25,15 +25,22 @@ const [info, setInfo] = useState({
 
 
   const [value, setValue] = useState('');
-  const [todos, setTodos] = useState(() => {
+const [todos, setTodos] = useState([]);
+
+useEffect(() => {
+  if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('todos');
-    return saved ? JSON.parse(saved) : [];
-  });
+    if (saved) {
+      setTodos(JSON.parse(saved));
+    }
+  }
+}, []);
 
-  useEffect(() => {
+useEffect(() => {
+  if (typeof window !== 'undefined') {
     localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
-
+  }
+}, [todos]);
 
 
   useEffect(() => {
@@ -77,6 +84,7 @@ const [info, setInfo] = useState({
       id: Date.now(),
       text,
       completed: false,
+      createdAt: new Date().toISOString()
     };
     setTodos([...todos, newTodo]);
   };
@@ -137,7 +145,7 @@ const editTodo = (id) => {
           {todos.length === 0 ? (
             <p className="text-gray-400 m-2">No tasks added yet</p>
           ) : (
-            todos.map((todo) => (
+            todos.map((todo) => ( <>
               <div key={todo.id} className="flex items-center gap-4 mt-2 p-3 shadow-2xl bg-gradient-to-r from-orange-800 to-gray-950 rounded-xl text-white">
                 <input
                   type="checkbox"
@@ -149,6 +157,7 @@ const editTodo = (id) => {
                 <span className={`flex-1 ${todo.completed ? 'line-through text-gray-400' : ''}`}>
                   {todo.text}
                 </span>
+
                 <div className='flex gap-2 flex-col'>
                 <button
              onClick={() => deleteTodo(todo.id)}
@@ -159,7 +168,12 @@ const editTodo = (id) => {
 
               > Edit </button>
                 </div>
+                
                 </div>
+                <div>
+                  <p className="text-gray-400 text-sm">{new Date(todo.createdAt).toLocaleString()}</p>
+                </div>
+              </>
             ))
           )}
         </div>
@@ -170,7 +184,8 @@ const editTodo = (id) => {
         <p> {info.deviceType}</p>
       <p>{info.os}</p>
       <p>{info.browser}</p>
-      <span>{ShowIP()}</span>
+      <span><ShowIP />
+</span>
     </div>
 
     </>
